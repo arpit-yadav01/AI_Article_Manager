@@ -1,0 +1,63 @@
+import { summarizeText } from "../services/ai.service.js";
+import { rewriteText } from "../services/ai.service.js";
+
+import { findMistakes } from "../services/ai.service.js";
+
+export const summarizeArticle = async (req, res) => {
+  try {
+    // 🔐 Backend role protection
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Admin only AI access" });
+    }
+
+    const { content } = req.body;
+    if (!content) {
+      return res.status(400).json({ message: "Article content required" });
+    }
+
+    const summary = await summarizeText(content);
+
+    res.json({ summary });
+  } catch (err) {
+    res.status(500).json({ message: "AI summarize failed" });
+  }
+};
+
+
+
+export const improveWriting = async (req, res) => {
+  try {
+    const { content } = req.body;
+
+    if (!content) {
+      return res.status(400).json({ message: "Content is required" });
+    }
+
+    const improved = await rewriteText(content);
+
+    res.json({ improved });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "AI rewrite failed" });
+  }
+};
+
+
+
+
+export const checkMistakes = async (req, res) => {
+  try {
+    const { content } = req.body;
+
+    if (!content) {
+      return res.status(400).json({ message: "Content is required" });
+    }
+
+    const feedback = await findMistakes(content);
+
+    res.json({ feedback });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "AI mistake analysis failed" });
+  }
+};
