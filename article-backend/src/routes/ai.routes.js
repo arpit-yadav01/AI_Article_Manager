@@ -3,6 +3,7 @@ import { summarizeArticle, improveWriting } from "../controllers/ai.controller.j
 import { protect } from "../middleware/auth.middleware.js";
 import { isAdmin } from "../middleware/role.middleware.js";
 import { checkMistakes } from "../controllers/ai.controller.js";
+import { suggestWritingIdeas } from "../controllers/ai.controller.js";
 
 const router = express.Router();
 
@@ -12,5 +13,7 @@ router.post("/summarize", protect, isAdmin, summarizeArticle);
 // ✨ AI Improve Writing (Admin only)
 router.post("/rewrite", protect, isAdmin, improveWriting);
 router.post("/mistakes", protect, isAdmin, checkMistakes);
+// 💡 AI Writing Suggestions (Users + Admins)
+router.post("/suggest", protect, suggestWritingIdeas);
 
 export default router;

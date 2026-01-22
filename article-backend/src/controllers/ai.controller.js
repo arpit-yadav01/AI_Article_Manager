@@ -2,7 +2,7 @@ import { summarizeText } from "../services/ai.service.js";
 import { rewriteText } from "../services/ai.service.js";
 
 import { findMistakes } from "../services/ai.service.js";
-
+import { suggestIdeas } from "../services/ai.service.js";
 export const summarizeArticle = async (req, res) => {
   try {
     // 🔐 Backend role protection
@@ -59,5 +59,28 @@ export const checkMistakes = async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "AI mistake analysis failed" });
+  }
+};
+
+
+
+export const suggestWritingIdeas = async (req, res) => {
+  try {
+    const { title, content } = req.body;
+
+    if (!content || content.length < 30) {
+      return res.status(400).json({
+        message: "Please write a bit more before asking for suggestions",
+      });
+    }
+
+    const suggestions = await suggestIdeas(title || "", content);
+
+    res.json({ suggestions });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "AI suggestion failed",
+    });
   }
 };
