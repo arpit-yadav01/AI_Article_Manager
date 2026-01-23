@@ -1,11 +1,15 @@
-import { summarizeText } from "../services/ai.service.js";
-import { rewriteText } from "../services/ai.service.js";
+import {
+  summarizeText,
+  rewriteText,
+  findMistakesText,
+  generateWritingIdeas,
+} from "../services/ai.service.js";
 
-import { findMistakes } from "../services/ai.service.js";
-import { suggestIdeas } from "../services/ai.service.js";
+/**
+ * 🧠 AI SUMMARIZE (ADMIN ONLY)
+ */
 export const summarizeArticle = async (req, res) => {
   try {
-    // 🔐 Backend role protection
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Admin only AI access" });
     }
@@ -16,15 +20,16 @@ export const summarizeArticle = async (req, res) => {
     }
 
     const summary = await summarizeText(content);
-
     res.json({ summary });
-  } catch (err) {
+  } catch (error) {
+    console.error(error);
     res.status(500).json({ message: "AI summarize failed" });
   }
 };
 
-
-
+/**
+ * ✨ AI IMPROVE WRITING
+ */
 export const improveWriting = async (req, res) => {
   try {
     const { content } = req.body;
@@ -34,7 +39,6 @@ export const improveWriting = async (req, res) => {
     }
 
     const improved = await rewriteText(content);
-
     res.json({ improved });
   } catch (error) {
     console.error(error);
@@ -42,9 +46,9 @@ export const improveWriting = async (req, res) => {
   }
 };
 
-
-
-
+/**
+ * 🔍 AI FIND MISTAKES
+ */
 export const checkMistakes = async (req, res) => {
   try {
     const { content } = req.body;
@@ -53,8 +57,7 @@ export const checkMistakes = async (req, res) => {
       return res.status(400).json({ message: "Content is required" });
     }
 
-    const feedback = await findMistakes(content);
-
+    const feedback = await findMistakesText(content);
     res.json({ feedback });
   } catch (error) {
     console.error(error);
@@ -62,11 +65,12 @@ export const checkMistakes = async (req, res) => {
   }
 };
 
-
-
-export const suggestWritingIdeas = async (req, res) => {
+/**
+ * 💡 AI SUGGEST WRITING IDEAS (CORE FEATURE)
+ */
+export const suggestIdeasController = async (req, res) => {
   try {
-    const { title, content } = req.body;
+    const { title = "", content } = req.body;
 
     if (!content || content.length < 30) {
       return res.status(400).json({
@@ -74,13 +78,14 @@ export const suggestWritingIdeas = async (req, res) => {
       });
     }
 
-    const suggestions = await suggestIdeas(title || "", content);
+    const suggestions = await generateWritingIdeas({
+      title,
+      content,
+    });
 
     res.json({ suggestions });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "AI suggestion failed",
-    });
+    console.error("AI Suggest Error:", error);
+    res.status(500).json({ message: "AI suggestion failed" });
   }
 };

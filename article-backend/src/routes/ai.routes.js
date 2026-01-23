@@ -1,19 +1,17 @@
 import express from "express";
-import { summarizeArticle, improveWriting } from "../controllers/ai.controller.js";
 import { protect } from "../middleware/auth.middleware.js";
-import { isAdmin } from "../middleware/role.middleware.js";
-import { checkMistakes } from "../controllers/ai.controller.js";
-import { suggestWritingIdeas } from "../controllers/ai.controller.js";
+import {
+  summarizeArticle,
+  improveWriting,
+  checkMistakes,
+  suggestIdeasController,
+} from "../controllers/ai.controller.js";
 
 const router = express.Router();
 
-// 🧠 AI Summarize (Admin only)
-router.post("/summarize", protect, isAdmin, summarizeArticle);
-
-// ✨ AI Improve Writing (Admin only)
-router.post("/rewrite", protect, isAdmin, improveWriting);
-router.post("/mistakes", protect, isAdmin, checkMistakes);
-// 💡 AI Writing Suggestions (Users + Admins)
-router.post("/suggest", protect, suggestWritingIdeas);
+router.post("/summarize", protect, summarizeArticle);
+router.post("/rewrite", protect, improveWriting);
+router.post("/mistakes", protect, checkMistakes);
+router.post("/suggest", protect, suggestIdeasController);
 
 export default router;

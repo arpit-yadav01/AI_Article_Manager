@@ -1,9 +1,15 @@
 import Groq from "groq-sdk";
 
-export const summarizeText = async (text) => {
-  const groq = new Groq({
+const createGroqClient = () =>
+  new Groq({
     apiKey: process.env.GROQ_API_KEY,
   });
+
+/**
+ * 🧠 Summarize article
+ */
+export const summarizeText = async (text) => {
+  const groq = createGroqClient();
 
   const completion = await groq.chat.completions.create({
     model: "llama-3.1-8b-instant",
@@ -22,11 +28,11 @@ export const summarizeText = async (text) => {
   return completion.choices[0].message.content;
 };
 
-
+/**
+ * ✨ Improve writing quality
+ */
 export const rewriteText = async (text) => {
-  const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY,
-  });
+  const groq = createGroqClient();
 
   const completion = await groq.chat.completions.create({
     model: "llama-3.1-8b-instant",
@@ -46,10 +52,11 @@ export const rewriteText = async (text) => {
   return completion.choices[0].message.content;
 };
 
-export const findMistakes = async (text) => {
-  const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY,
-  });
+/**
+ * 🔍 Find mistakes & suggestions
+ */
+export const findMistakesText = async (text) => {
+  const groq = createGroqClient();
 
   const completion = await groq.chat.completions.create({
     model: "llama-3.1-8b-instant",
@@ -69,37 +76,46 @@ export const findMistakes = async (text) => {
   return completion.choices[0].message.content;
 };
 
+/**
+ * 💡 Suggest how to continue writing (CORE FEATURE)
+ */
+export const generateWritingIdeas = async ({ title, content }) => {
+  const groq = createGroqClient();
 
-// 🧠 Suggest how to continue writing
-export const suggestIdeas = async (title, content) => {
-  const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY,
-  });
+  const prompt = `
+You are a writing assistant.
 
-  const completion = await groq.chat.completions.create({
+The user is writing an article and feels stuck.
+Suggest ideas on how they can continue writing.
+
+Rules:
+- Do NOT rewrite existing content
+- Do NOT complete the article
+- Do NOT repeat the text
+- Provide bullet-point ideas only
+- Keep suggestions concise and helpful
+
+Article Title:
+"${title}"
+
+Current Content:
+"${content}"
+`;
+
+  const response = await groq.chat.completions.create({
     model: "llama-3.1-8b-instant",
     messages: [
-      {
-        role: "system",
-        content: `
-You are a writing assistant.
-Suggest ideas on how to continue the article.
-Do NOT rewrite existing text.
-Do NOT complete the article.
-Return only bullet-point ideas.
-`,
-      },
-      {
-        role: "user",
-        content: `
-Article title: ${title}
-
-Current content:
-${content}
-`,
-      },
+      { role: "system", content: "You help writers with ideas only." },
+      { role: "user", content: prompt },
     ],
+    temperature: 0.6,
   });
 
-  return completion.choices[0].message.content;
+  const rawText = response.choices[0].message.content;
+
+  // Normalize bullets → clean array
+  return rawText
+    .split("\n")
+    .map((line) => line.replace(/^[-•*]\s*/, "").trim())
+    .filter(Boolean);
 };
