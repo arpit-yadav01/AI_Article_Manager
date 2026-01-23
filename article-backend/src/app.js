@@ -33,7 +33,6 @@
 
 // export default app;
 
-
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -44,18 +43,22 @@ import adminUserRoutes from "./routes/admin.user.routes.js";
 import articleRoutes from "./routes/article.routes.js";
 import aiRoutes from "./routes/ai.routes.js";
 
-const app = express(); // ✅ app must be created FIRST
+const app = express();
 
-// ✅ CORS with credentials (REQUIRED for cookies)
+
+
+
 app.use(
   cors({
-    origin: "http://localhost:5173", // frontend URL (Netlify later)
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
 
+
+
 app.use(express.json());
-app.use(cookieParser()); // ✅ REQUIRED for reading cookies
+app.use(cookieParser());
 
 // 🔐 Auth routes
 app.use("/api/auth/user", userAuthRoutes);

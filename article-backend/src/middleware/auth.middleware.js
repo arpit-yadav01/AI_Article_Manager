@@ -22,14 +22,11 @@
 //   }
 // };
 
-
 import jwt from "jsonwebtoken";
 
 export const protect = (req, res, next) => {
   try {
-    // ✅ Read token from httpOnly cookie
     const token = req.cookies?.token;
-
     if (!token) {
       return res.status(401).json({ message: "Not authorized" });
     }
@@ -42,7 +39,7 @@ export const protect = (req, res, next) => {
     };
 
     next();
-  } catch (error) {
-    return res.status(401).json({ message: "Invalid or expired token" });
+  } catch {
+    return res.status(401).json({ message: "Invalid token" });
   }
 };

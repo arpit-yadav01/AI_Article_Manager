@@ -8,33 +8,26 @@
 
 // export default router;
 
-
 import express from "express";
-import {
-  registerUser,
-  loginUser,
-} from "../controllers/user.auth.controller.js";
+import { registerUser, loginUser } from "../controllers/user.auth.controller.js";
 import { protect } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-// 🔐 Auth
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 
-// 👤 Get current logged-in user (session restore)
+// session restore
 router.get("/me", protect, (req, res) => {
-  res.json({
-    user: req.user,
-  });
+  res.json({ user: req.user });
 });
 
-// 🚪 Logout (clear cookie)
+// logout
 router.post("/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
+    secure: false,
+    sameSite: "lax",
   });
 
   res.json({ message: "Logged out successfully" });

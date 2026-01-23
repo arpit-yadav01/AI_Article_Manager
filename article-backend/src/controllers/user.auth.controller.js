@@ -87,12 +87,12 @@ export const registerUser = async (req, res) => {
 
   const token = generateToken(user);
 
-  // ✅ SET JWT AS httpOnly COOKIE
+  // ✅ LOCAL COOKIE
   res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    secure: false,      // localhost = no HTTPS
+    sameSite: "lax",    // perfect for local
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
   res.status(201).json({
@@ -112,7 +112,7 @@ export const loginUser = async (req, res) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
-  if (!user || user.role !== "user") {
+  if (!user) {
     return res.status(401).json({ message: "Invalid credentials" });
   }
 
@@ -123,12 +123,12 @@ export const loginUser = async (req, res) => {
 
   const token = generateToken(user);
 
-  // ✅ SET JWT AS httpOnly COOKIE
+  // ✅ LOCAL COOKIE
   res.cookie("token", token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    secure: false,
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
   res.json({
