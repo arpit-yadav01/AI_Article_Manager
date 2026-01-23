@@ -60,10 +60,11 @@
 //   });
 // };
 
-
 import bcrypt from "bcryptjs";
 import User from "../models/User.js";
 import { generateToken } from "../utils/jwt.js";
+
+const isProd = process.env.NODE_ENV === "production";
 
 /**
  * USER REGISTER
@@ -87,11 +88,11 @@ export const registerUser = async (req, res) => {
 
   const token = generateToken(user);
 
-  // ✅ LOCAL COOKIE
+  // ✅ ENV-AWARE COOKIE
   res.cookie("token", token, {
     httpOnly: true,
-    secure: false,      // localhost = no HTTPS
-    sameSite: "lax",    // perfect for local
+    secure: isProd,                 // 🔥 true on Render
+    sameSite: isProd ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
@@ -123,11 +124,11 @@ export const loginUser = async (req, res) => {
 
   const token = generateToken(user);
 
-  // ✅ LOCAL COOKIE
+  // ✅ ENV-AWARE COOKIE
   res.cookie("token", token, {
     httpOnly: true,
-    secure: false,
-    sameSite: "lax",
+    secure: isProd,
+    sameSite: isProd ? "none" : "lax",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
