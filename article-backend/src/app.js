@@ -33,6 +33,8 @@
 
 // export default app;
 
+
+
 import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -45,17 +47,32 @@ import aiRoutes from "./routes/ai.routes.js";
 
 const app = express();
 
+/**
+ * ✅ ALLOWED ORIGINS
+ */
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://articlemanagerwithai.netlify.app",
+];
 
-
-
+/**
+ * ✅ CORS CONFIG (COOKIE SAFE)
+ */
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: function (origin, callback) {
+      // allow server-to-server & Postman
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("CORS not allowed"));
+    },
     credentials: true,
   })
 );
-
-
 
 app.use(express.json());
 app.use(cookieParser());
