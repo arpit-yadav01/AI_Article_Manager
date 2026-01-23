@@ -1,59 +1,151 @@
+
+
+// import { useEffect, useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import api from "../api/axios";
+// import { useAuth } from "../context/AuthContext";
+
+// export default function Explore() {
+//   const [articles, setArticles] = useState([]);
+//   const [loading, setLoading] = useState(true);
+//   const navigate = useNavigate();
+//   const { user } = useAuth();
+
+//   useEffect(() => {
+//     if (!user) return;
+
+//     const fetchExploreArticles = async () => {
+//       try {
+//         const res = await api.get("/articles");
+
+//         // Filter out current user's articles
+//         const otherArticles = res.data.filter(
+//           (article) => article.author?._id !== user.id
+//         );
+
+//         setArticles(otherArticles);
+//       } catch (err) {
+//         console.log("Failed to load explore articles", err);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchExploreArticles();
+//   }, [user]);
+
+//   if (loading) {
+//     return (
+//       <div className="loading-spinner">
+//         <p>Loading articles...</p>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="articles-list-page">
+//       <h2>Explore Articles</h2>
+
+//       {articles.length === 0 ? (
+//         <div className="empty-articles">
+//           <p>No articles to explore yet.</p>
+//         </div>
+//       ) : (
+//         <div className="articles-grid">
+//           {articles.map((article) => (
+//             <div
+//               key={article._id}
+//               className="article-list-card"
+//               onClick={() => navigate(`/articles/${article._id}`)}
+//             >
+//               <h3>{article.title}</h3>
+//               <p>{article.content.slice(0, 150)}...</p>
+//               <small>
+//                 By: {article.author?.name} ({article.author?.email})
+//               </small>
+//             </div>
+//           ))}
+//         </div>
+//       )}
+//     </div>
+//   );
+// }
+
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api/axios";
-import { getUserIdFromToken } from "../api/token";
+import { useAuth } from "../context/AuthContext";
+import AnimatedBackground from "../components/AnimatedBackground";
 
 export default function Explore() {
   const [articles, setArticles] = useState([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   useEffect(() => {
-    const fetchExploreArticles = async () => {
-      const userId = getUserIdFromToken();
-      if (!userId) return;
+    if (!user) return;
 
+    const fetchExploreArticles = async () => {
       try {
         const res = await api.get("/articles");
 
-        // 🔥 Filter only OTHER users' articles
+        // Filter out current user's articles
         const otherArticles = res.data.filter(
-          (article) => article.author?._id !== userId
+          (article) => article.author?._id !== user.id
         );
 
         setArticles(otherArticles);
-      } catch {
-        console.log("Failed to load explore articles");
+      } catch (err) {
+        console.log("Failed to load explore articles", err);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchExploreArticles();
-  }, []);
+  }, [user]);
+
+  if (loading) {
+    return (
+      <>
+        <AnimatedBackground variant="default" />
+        <div className="loading-spinner">
+          <p>Loading articles...</p>
+        </div>
+      </>
+    );
+  }
 
   return (
-    <div>
-      <h2>Explore Articles</h2>
+    <>
+      <AnimatedBackground variant="default" />
+      <div className="articles-list-page">
+        <h2>Explore Articles</h2>
 
-      {articles.length === 0 && <p>No articles to explore.</p>}
-
-      {articles.map((article) => (
-        <div
-          key={article._id}
-          style={{ borderBottom: "1px solid #ccc", padding: "10px" }}
-        >
-          <h3
-            style={{ cursor: "pointer", color: "blue" }}
-            onClick={() => navigate(`/articles/${article._id}`)}
-          >
-            {article.title}
-          </h3>
-
-          <p>{article.content.slice(0, 100)}...</p>
-
-          <small>
-            By: {article.author?.name} ({article.author?.email})
-          </small>
-        </div>
-      ))}
-    </div>
+        {articles.length === 0 ? (
+          <div className="empty-articles">
+            <p>No articles to explore yet.</p>
+          </div>
+        ) : (
+          <div className="articles-grid">
+            {articles.map((article) => (
+              <div
+                key={article._id}
+                className="article-list-card"
+                onClick={() => navigate(`/articles/${article._id}`)}
+              >
+                <h3>{article.title}</h3>
+                <p>{article.content.slice(0, 150)}...</p>
+                <small>
+                  By: {article.author?.name} ({article.author?.email})
+                </small>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </>
   );
 }

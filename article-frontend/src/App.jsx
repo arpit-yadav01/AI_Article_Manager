@@ -10,14 +10,32 @@ import PublicArticle from "./pages/PublicArticle";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import CreateArticle from "./pages/CreateArticle";
+import PublicRoute from "./components/PublicRoute";
+
 
 export default function App() {
   return (
     <BrowserRouter>
       <Navbar />
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
+        <Route
+  path="/login"
+  element={
+    <PublicRoute>
+      <Login />
+    </PublicRoute>
+  }
+/>
+
+<Route
+  path="/register"
+  element={
+    <PublicRoute>
+      <Register />
+    </PublicRoute>
+  }
+/>
+
 
         {/* 🔐 Protected */}
         <Route
