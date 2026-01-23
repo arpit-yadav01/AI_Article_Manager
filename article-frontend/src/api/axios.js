@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "https://ai-article-manager.onrender.com/api",
+  baseURL: "https://ai-article-manager.onrender.com/",
   withCredentials: true, // ✅ REQUIRED for httpOnly cookies
 });
 
