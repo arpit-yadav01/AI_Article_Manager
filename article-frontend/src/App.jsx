@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
+import PublicRoute from "./components/PublicRoute";
 
 import Home from "./pages/Home";
 import MyArticles from "./pages/MyArticles";
@@ -10,39 +11,43 @@ import PublicArticle from "./pages/PublicArticle";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import CreateArticle from "./pages/CreateArticle";
-import PublicRoute from "./components/PublicRoute";
-
 
 export default function App() {
   return (
     <BrowserRouter>
       <Navbar />
+
       <Routes>
+        {/* 🌍 PUBLIC ROUTES */}
+        <Route path="/" element={<Home />} />
+        <Route path="/explore" element={<Explore />} />
+        <Route path="/articles/:id" element={<PublicArticle />} />
+
+        {/* 🔓 AUTH PAGES (BLOCK IF LOGGED IN) */}
         <Route
-  path="/login"
-  element={
-    <PublicRoute>
-      <Login />
-    </PublicRoute>
-  }
-/>
+          path="/login"
+          element={
+            <PublicRoute>
+              <Login />
+            </PublicRoute>
+          }
+        />
 
-<Route
-  path="/register"
-  element={
-    <PublicRoute>
-      <Register />
-    </PublicRoute>
-  }
-/>
-
-
-        {/* 🔐 Protected */}
         <Route
-          path="/"
+          path="/register"
+          element={
+            <PublicRoute>
+              <Register />
+            </PublicRoute>
+          }
+        />
+
+        {/* 🔐 PROTECTED ROUTES */}
+        <Route
+          path="/create"
           element={
             <ProtectedRoute>
-              <Home />
+              <CreateArticle />
             </ProtectedRoute>
           }
         />
@@ -61,33 +66,6 @@ export default function App() {
           element={
             <ProtectedRoute>
               <MyArticle />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/explore"
-          element={
-            <ProtectedRoute>
-              <Explore />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/articles/:id"
-          element={
-            <ProtectedRoute>
-              <PublicArticle />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/create"
-          element={
-            <ProtectedRoute>
-              <CreateArticle />
             </ProtectedRoute>
           }
         />
