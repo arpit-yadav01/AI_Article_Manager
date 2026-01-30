@@ -8,29 +8,34 @@
 
 // export default router;
 
-
-
 import express from "express";
 import { registerUser, loginUser } from "../controllers/user.auth.controller.js";
 import { protect } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
-const isProd = process.env.NODE_ENV === "production";
 
+// ✅ Register & Login
 router.post("/register", registerUser);
 router.post("/login", loginUser);
 
-// session restore
+// ✅ Session check (USER)
 router.get("/me", protect, (req, res) => {
-  res.json({ user: req.user });
+  res.json({
+    user: {
+      id: req.user._id,
+      name: req.user.name,
+      email: req.user.email,
+      role: req.user.role,
+    },
+  });
 });
 
-// logout
+// ✅ Logout
 router.post("/logout", (req, res) => {
   res.clearCookie("token", {
     httpOnly: true,
-    secure: isProd,
-    sameSite: isProd ? "none" : "lax",
+    secure: false,
+    sameSite: "lax",
   });
 
   res.json({ message: "Logged out successfully" });

@@ -1,3 +1,36 @@
+// import mongoose from "mongoose";
+
+// const userSchema = new mongoose.Schema(
+//   {
+//     name: {
+//       type: String,
+//       required: true,
+//       trim: true
+//     },
+//     email: {
+//       type: String,
+//       required: true,
+//       unique: true,
+//       lowercase: true
+//     },
+//     passwordHash: {
+//       type: String,
+//       required: true
+//     },
+//     role: {
+//       type: String,
+//       enum: ["user", "admin"],
+//       default: "user"
+//     }
+//   },
+//   { timestamps: true }
+// );
+
+// const User = mongoose.model("User", userSchema);
+
+// export default User;
+
+
 import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
@@ -5,23 +38,33 @@ const userSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      trim: true
+      trim: true,
     },
     email: {
       type: String,
       required: true,
       unique: true,
-      lowercase: true
+      lowercase: true,
     },
     passwordHash: {
       type: String,
-      required: true
+      required: true,
     },
     role: {
       type: String,
       enum: ["user", "admin"],
-      default: "user"
-    }
+      default: "user",
+    },
+
+    // 🧠 AI QUOTA FIELDS
+    aiUsageCount: {
+      type: Number,
+      default: 0,
+    },
+    aiUsageResetAt: {
+      type: Date,
+      default: null,
+    },
   },
   { timestamps: true }
 );

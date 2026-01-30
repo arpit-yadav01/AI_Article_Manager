@@ -4,18 +4,22 @@ import {
   getAllArticles,
   getArticleById,
   updateArticle,
-  deleteArticle
+  deleteArticle,
+  getMyArticles,
 } from "../controllers/article.controller.js";
 
-import { protect } from "../middleware/auth.middleware.js";
+import { protect, protectOptional } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
 
-// Public read
-router.get("/", getAllArticles);
-router.get("/:id", getArticleById);
+// 🔐 User specific (MUST COME FIRST)
+router.get("/mine", protect, getMyArticles);
 
-// Protected write
+// 🌍 Public read
+router.get("/", protectOptional, getAllArticles);
+router.get("/:id", protectOptional, getArticleById);
+
+// ✍️ Write actions
 router.post("/", protect, createArticle);
 router.put("/:id", protect, updateArticle);
 router.delete("/:id", protect, deleteArticle);
